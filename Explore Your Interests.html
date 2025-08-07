@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Explore Your Interests</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html, body{height:100%;font-family:'Segoe UI',sans-serif}
+    body {
+      background: url('https://images.unsplash.com/photo-1600195077909-46a3a30f0c62?auto=format&fit=crop&w=1740&q=80') center/cover no-repeat;
+      display:flex; justify-content:center; align-items:center; padding:20px;
+    }
+    .section {
+      display:none;
+      width:100%; max-width:650px;
+      background:rgba(255,255,255,0.97);
+      padding:30px; border-radius:15px;
+      box-shadow:0 0 20px rgba(0,0,0,0.2);
+      text-align:center; border:2px solid #7B1FA2;
+    }
+    .visible{display:block}
+    h1{margin-bottom:20px;color:#4A148C;font-size:30px}
+    input, button{width:100%;padding:12px;margin:10px 0;border-radius:6px;font-size:16px;border:1px solid #ccc}
+    button{background:#009688;color:#fff;border:none;cursor:pointer;font-weight:bold}
+    button:hover{background:#00796B}
+    .button-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:10px}
+    .button-grid button{padding:10px 20px;border:2px solid #7B1FA2;background:#F3E5F5;color:#4A148C;border-radius:8px;font-weight:bold}
+    .suboption-btn{background:#FFF3E0;border:2px solid #FB8C00;color:#E65100}
+    .academy-card{background:#FAFAFA;text-align:left;margin:8px 0;padding:15px;border-radius:10px;border:1px solid #BDBDBD}
+    .academy-card strong{color:#333}
+    #institutesBox h3{margin-bottom:15px;color:#4A148C}
+    @media(max-width:600px){h1{font-size:24px} input{font-size:14px}}
+  </style>
+</head>
+<body>
+
+  <div id="loginStep" class="section visible">
+    <h1>Login to Explore Your Interests</h1>
+    <input id="nameInput" placeholder="Enter Your Name" />
+    <input id="phoneInput" placeholder="Enter Your Phone Number" />
+    <input id="emailInput" placeholder="Enter Your Email" type="email" />
+    <button onclick="submitLogin()">Login</button>
+  </div>
+
+  <div id="cats" class="section">
+    <h1>Select a Category</h1>
+    <div class="button-grid">
+      <button onclick="chooseCategory('Music')">🎵 Music</button>
+      <button onclick="chooseCategory('Drawing')">🎨 Drawing</button>
+      <button onclick="chooseCategory('Dance')">💃 Dance</button>
+      <button onclick="chooseCategory('Sports')">🏀 Sports</button>
+    </div>
+  </div>
+
+  <div id="subs" class="section">
+    <h1 id="catTitle">Subdomains</h1>
+    <div id="subdomGrid" class="button-grid"></div>
+  </div>
+
+  <div id="loc" class="section">
+    <h1>Enter Your Location</h1>
+    <input id="userLocation" placeholder="City or Area" />
+    <button onclick="showInstitutes()">Show Nearby Options</button>
+  </div>
+
+  <div id="list" class="section">
+    <div id="institutesBox"></div>
+  </div>
+
+<script>
+  const domains = {
+    Music: ['Guitar', 'Drums', 'Piano', 'Violin', 'Ukulele'],
+    Drawing: ['Sketching', 'Watercolor', 'Digital Art', 'Cartooning', 'Portrait'],
+    Dance: ['Ballet', 'Hip-hop', 'Salsa', 'Jazz', 'Kathak'],
+    Sports: ['Basketball', 'Swimming', 'Tennis', 'Football', 'Cricket']
+  };
+
+  const institutions = [
+    { name: 'Nirmala Academy', rating: 4.6, fee: '4500', review: 'Excellent teachers', coord: '9876543210' },
+    { name: 'Rejoice Academy', rating: 4.9, fee: '4000', review: 'Friendly staff', coord: '9123456780' },
+    { name: 'Sj Academy  (Offline & Online)', rating: 4.1, fee: '5000', review: 'Flexible hours', coord: '9988776655' },
+    { name: 'Natayaaradhana  Academy', rating: 4.9, fee: '3999', review: 'Great ambiance', coord: '9456123780' }
+  ];
+
+  let currentSub = '', user = {}, currentLocation = '';
+
+  function submitLogin() {
+    const name = document.getElementById('nameInput').value.trim();
+    const phone = document.getElementById('phoneInput').value.trim();
+    const email = document.getElementById('emailInput').value.trim();
+    if (!name || !phone || !email) {
+      alert('Please fill all fields');
+      return;
+    }
+    user = { name, phone, email };
+    goTo('cats');
+  }
+
+  function chooseCategory(cat) {
+    document.getElementById('catTitle').innerText = `${cat} Subdomains`;
+    const container = document.getElementById('subdomGrid');
+    container.innerHTML = '';
+    domains[cat].forEach(sub => {
+      const btn = document.createElement('button');
+      btn.className = 'suboption-btn';
+      btn.textContent = sub;
+      btn.onclick = () => {
+        currentSub = sub;
+        goTo('loc');
+      };
+      container.appendChild(btn);
+    });
+    goTo('subs');
+  }
+
+  function showInstitutes() {
+    const loc = document.getElementById('userLocation').value.trim();
+    if (!loc) {
+      alert('Enter your location');
+      return;
+    }
+
+    currentLocation = loc;
+
+    const box = document.getElementById('institutesBox');
+    box.innerHTML = `
+      <h3>Here are your nearby locations:</h3>
+      <p><strong>Location:</strong> ${currentLocation}</p>
+      <p><strong>Category:</strong> ${currentSub}</p>
+      <br>
+    `;
+
+    institutions.forEach(inst => {
+      const div = document.createElement('div');
+      div.className = 'academy-card';
+      div.innerHTML = `
+        <strong>Name:</strong> ${inst.name}<br>
+        <strong>Rating:</strong> ⭐ ${inst.rating}<br>
+        <strong>Fee:</strong> ${inst.fee}<br>
+        <strong>Review:</strong> ${inst.review}<br>
+        <strong>Coordinator:</strong> ${inst.coord}
+      `;
+      box.appendChild(div);
+    });
+
+    goTo('list');
+  }
+
+  function goTo(id) {
+    ['loginStep', 'cats', 'subs', 'loc', 'list'].forEach(s => {
+      document.getElementById(s).classList.remove('visible');
+    });
+    document.getElementById(id).classList.add('visible');
+  }
+</script>
+
+</body>
+</html>
